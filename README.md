@@ -24,3 +24,10 @@ node()	匹配任何类型的节点。
 /bookstore/*	选取 bookstore 元素的所有子元素。
 //*	选取文档中的所有元素。
 //title[@*]	选取所有带有属性的 title 元素
+# Scrapy
+相关文档 
+http://scrapy-chs.readthedocs.io/zh_CN/0.24/intro/overview.html
+
+博客 
+http://blog.csdn.net/fennvde007/article/details/19403977
+http://blog.csdn.net/elecjack/article/details/51532482
