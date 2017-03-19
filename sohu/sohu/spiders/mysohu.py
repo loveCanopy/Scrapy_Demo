@@ -1,16 +1,15 @@
 # encoding=utf-8
 import sys
-
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from scrapy.spiders import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 import re
-from scrapy.spiders import CrawlSpider,Rule
+#from scrapy.spiders import CrawlSpider,Rule
 import scrapy
 from sohu.items import SohuItem
-from scrapy.linkextractors import LinkExtractor
-
+#from scrapy.linkextractors import LinkExtractor
+from selenium import webdriver
 
 class DmozSpider(BaseSpider):
     name = "mysohuSpider"
@@ -24,7 +23,10 @@ class DmozSpider(BaseSpider):
     #
     pages = set()
     url_set = set()  # 保留url连接
-
+    cap = webdriver.DesiredCapabilities.PHANTOMJS
+    driver = webdriver.PhantomJS(desired_capabilities=cap)
+    pages = set()
+    url_set = set()  # 保留url连接
     def parse(self, response):
         # hxs = HtmlXPathSelector(response)
         # if self.start_urls[0] not in self.pages:
@@ -59,15 +61,23 @@ class DmozSpider(BaseSpider):
     def parse_item(self, response):
         items = SohuItem()
         hxs = HtmlXPathSelector(response)
-        items['name'] = hxs.xpath('//div[@class="crumbs"]/a[last()]/text()').extract()
-        items['fav'] = hxs.xpath('//div[@class="vBox vBox-ding"]//i/text()').extract()
-        items['step'] = hxs.xpath('//div[@class="vBox vBox-cai"]//i/text()').extract()
-        items['playcounts'] = hxs.xpath('//div[@class="vBox vBox-play vBox-play-panel"]//i/text()').extract()
-        items['actor'] = hxs.xpath('//div[@class="info info-con"]//a[@data-pb-other="actor"]/text()').extract()
-        items['director'] = hxs.xpath('//div[@class="info info-con"]//a[@data-pb-other="director"]/text()').extract()
-        items['introduce'] = hxs.xpath('//div[@class="info info-con"]/p[@class="intro"]/text()').extract()
-        # items['time']=hxs.xpath('')
-        # items['area']=hxs.xpath('')
-        # items['type']=hxs.xpath('')
-        # items['year']=hxs.xpath('')
+        #打开渲染
+      	self.driver.get(response.url)
+        # 点击展开信息按钮
+        self.driver.find_element_by_class_name("info-arrT").click()
+        items['name'] = self.driver.find_element_by_xpath('//div[@class="crumbs"]/a[last()]').text
+        items['fav'] = self.driver.find_element_by_xpath('//div[@class="vBox vBox-ding"]//i').text
+        items['step'] = self.driver.find_element_by_xpath('//div[@class="vBox vBox-cai"]//i').text
+        items['playcounts'] = self.driver.find_element_by_xpath(
+            '//div[@class="vBox vBox-play vBox-play-panel"]//i').text
+        items['actor'] = self.driver.find_element_by_xpath(
+            '//div[@class="info info-con"]//a[@data-pb-other="actor"]').text
+        items['director'] = self.driver.find_element_by_xpath(
+            '//div[@class="info info-con"]//a[@data-pb-other="director"]').text
+        items['introduce'] = self.driver.find_element_by_xpath(
+            '//div[@class="info info-con"]/p[@class="intro open"]').text
+        items['time'] = self.driver.find_element_by_xpath('//li[@style="display: list-item;"]').text
+        items['area'] = self.driver.find_element_by_xpath('//a[@data-pb-other="area"]').text
+        items['type'] = self.driver.find_element_by_xpath('//a[@data-pb-other="category"]').text
+        items['year'] = self.driver.find_element_by_xpath('//a[@data-pb-other="year"]').text
         yield items
