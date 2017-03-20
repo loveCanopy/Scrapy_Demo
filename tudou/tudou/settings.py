@@ -138,3 +138,13 @@ USER_AGENTS = [
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+#数据库配置
+MYSQL_HOST='localhost'
+MYSQL_DBNAME='mysql'
+MYSQL_USER='root'
+MYSQL_PASSWD='root'
+MYSQL_PORT=3306
+ITEM_PIPELINES = {
+        #    # 'tudou.pipelines.JsonWithEncodingCnblogsPipeline': 300,
+             'tudou.pipelines.MySQLStoreTudouPipeline':300,
+              }
